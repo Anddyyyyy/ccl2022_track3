@@ -26,9 +26,13 @@
    python -m spacy download zh_core_web_sm
    ```
 
-## 数据预处理
+## 复现步骤
 
-1. 将训练集、验证集字符按空格分开，每句一行
+### 数据预处理
+
+1. 将训练集、验证集字符按空格分开，每句一行。
+
+   其中，官方提供的训练集文件lang8.train.ccl22.para的所在路径，yaclc_dev.para是验证集的.para文件所在位置(CCL2022-CLTC-main/datasets/track3/dev/yaclc_dev.para)，src_path和tgt_path都是处理后文件存放的位置，默认和.para文件在同一文件夹下
 
    ```bash
    python utils/preprocess_para -s src_path -t tgt_path -f lang8.train.ccl22.para
@@ -37,12 +41,14 @@
 
 2. 生成编辑序列
 
+   其中，src_path、tgt_path是上一步预处理后的文件位置，output_edit_file是生成的编辑序列路径，放在CCL2022-CLTC-main/baselines/track3/下
+
    ```bash
    cd CCL2022-CLTC-main/baselines/track3/seq2edit
-   python utils/preprocess_data.py -s source_file -t target_file -o output_edit_file
+   python utils/preprocess_data.py -s src_path -t tgt_path -o output_edit_file
    ```
 
-## 模型训练
+### 模型训练
 
 - 下载huggingface大规模预训练模型到文件夹[CCL2022-CLTC-main](https://github.com/Anddyyyyy/CCL2022_TRACK3/tree/add-license-1/CCL2022-CLTC/CCL2022-CLTC-main)/[baselines](https://github.com/Anddyyyyy/CCL2022_TRACK3/tree/add-license-1/CCL2022-CLTC/CCL2022-CLTC-main/baselines)/[track3](https://github.com/Anddyyyyy/CCL2022_TRACK3/tree/add-license-1/CCL2022-CLTC/CCL2022-CLTC-main/baselines/track3)/pretrain_model下，下面是
 
@@ -51,22 +57,24 @@
 - 编辑deepspeed_config.json. 需要注意的是，lr和batch_size会被args参数覆盖。然后编辑train.sh，并运行
 
   ```bash
+  cd CCL2022-CLTC-main/baselines/track3/seq2edit
   bash train.sh
   ```
 
-## 模型预测
+### 模型预测
 
 - 编辑deepspeed_config.json，然后编辑predict.sh，并运行
 
   ```bash
+  cd CCL2022-CLTC-main/baselines/track3/seq2edit
   bash predict.sh
   ```
 
-## 模型集成
+### 模型集成
 
 - 用初始目录utils文件夹中的preprocess_test_para.py，将test.src文件和test.preds文件合并成集成需要用的.para文件格式
 
-  ```
+  ```bash
   python utils/preprocess_test_para.py -s test.src -t test.preds -f test.para
   ```
 
